@@ -1,0 +1,17 @@
+name: Test
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+concurrency:
+  group: test-${{ github.ref_name }}
+  cancel-in-progress: ${{ github.ref_name != 'master' }}
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    uses: solidusio/test-solidus-extension/.github/workflows/test.yml@v1
