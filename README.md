@@ -1,6 +1,6 @@
 # Solidus Related Products
 
-[![CircleCI](https://circleci.com/gh/solidusio-contrib/solidus_related_products.svg?style=shield)](https://circleci.com/gh/solidusio-contrib/solidus_related_products)
+[![Test](https://github.com/solidusio-contrib/solidus_related_products/actions/workflows/test.yml/badge.svg)](https://github.com/solidusio-contrib/solidus_related_products/actions/workflows/test.yml)
 [![codecov](https://codecov.io/gh/solidusio-contrib/solidus_related_products/branch/master/graph/badge.svg)](https://codecov.io/gh/solidusio-contrib/solidus_related_products)
 
 This extension provides a generic way for you to define different types of relationships between your products, by defining a RelationType for each type of relationship you'd like to maintain.
@@ -150,6 +150,7 @@ Please refer to the dedicated [page](https://github.com/solidusio/solidus/wiki/H
 ## License
 
 Copyright (c) 2010-2015 [Brian Quinn][1] and [contributors][2], released under the [New BSD License][3]
+Copyright (c) 2015-2026 Solidus [contributors][2], released under the [New BSD License][3]
 
 [1]: https://github.com/BDQ
 [2]: https://github.com/solidusio-contrib/solidus_related_products/graphs/contributors
