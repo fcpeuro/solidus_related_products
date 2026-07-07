@@ -5,8 +5,19 @@ module Spree
     class RelationsController < Spree::Api::BaseController
       include Spree::RelatedToFinder
 
-      before_action :load_data, only: [:create, :destroy]
-      before_action :find_relation, only: [:update, :destroy]
+      before_action :load_data, only: [:index, :show, :create, :update, :destroy]
+      before_action :find_relation, only: [:show, :update, :destroy]
+
+      def index
+        authorize! :index, Relation
+        @relations = paginate(@product.relations.accessible_by(current_ability))
+        respond_with(@relations)
+      end
+
+      def show
+        authorize! :show, @relation
+        respond_with(@relation)
+      end
 
       def create
         authorize! :create, Relation
@@ -15,7 +26,7 @@ module Spree
         @relation.related_to = find_related_to
 
         if @relation.save
-          render json: @relation.to_json, status: :created
+          respond_with(@relation, status: 201, default_template: :show)
         else
           invalid_resource!(@relation)
         end
@@ -24,7 +35,7 @@ module Spree
       def update
         authorize! :update, Relation
         if @relation.update(relation_params)
-          render json: @relation.to_json
+          respond_with(@relation, status: 200, default_template: :show)
         else
           invalid_resource!(@relation)
         end
@@ -62,8 +73,12 @@ module Spree
         @product = Spree::Product.friendly.find(params[:product_id])
       end
 
+      # Scope the finder through the parent product so a relation under a
+      # different product 404s instead of leaking across context. The :show
+      # ability level filters records the user can't read; write actions layer
+      # their own authorize! on top.
       def find_relation
-        @relation = Relation.find(params[:id])
+        @relation = @product.relations.accessible_by(current_ability, :show).find(params[:id])
       end
 
       def model_class

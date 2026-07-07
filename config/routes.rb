@@ -22,14 +22,13 @@ Spree::Core::Engine.routes.draw do
 
   namespace :api, defaults: { format: 'json' } do
     resources :products, only: [] do
-      get :related, on: :member
-      resources :relations, only: [:create, :update, :destroy] do
+      resources :relations, only: [:index, :show, :create, :update, :destroy] do
         collection do
           post :update_positions
         end
       end
       resources :variants, only: [] do
-        resources :relations, module: 'variants', only: [:create, :update, :destroy] do
+        resources :relations, module: 'variants', only: [:index, :show, :create, :update, :destroy] do
           collection do
             post :update_positions
           end

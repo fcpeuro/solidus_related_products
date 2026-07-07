@@ -91,6 +91,63 @@ You can optionally specify a discount amount to be applied if a customer purchas
 
 Note: In order for the coupon to be automatically applied, you must create a promotion leaving the __code__ value empty, and adding an Action of type : __RelatedProductDiscount__  (blank codes are required for coupons to be automatically applied).
 
+## API
+
+The extension exposes the classic Solidus (`Spree::Api`) JSON API for managing a product's or
+variant's relations. Requests authenticate with a Spree API key sent either as an
+`Authorization: Bearer <key>` header or a `token` query param, and are authorized with the same
+`Spree::Ability` rules as the admin.
+
+Relations are nested under their parent product or variant:
+
+| Method   | Path                                                                | Action           |
+| -------- | ------------------------------------------------------------------- | ---------------- |
+| `GET`    | `/api/products/:product_id/relations`                               | list relations   |
+| `GET`    | `/api/products/:product_id/relations/:id`                           | show a relation  |
+| `POST`   | `/api/products/:product_id/relations`                               | create           |
+| `PATCH`  | `/api/products/:product_id/relations/:id`                           | update           |
+| `DELETE` | `/api/products/:product_id/relations/:id`                           | destroy          |
+| `POST`   | `/api/products/:product_id/relations/update_positions`              | reorder          |
+| `GET`    | `/api/products/:product_id/variants/:variant_id/relations`          | list relations   |
+| `GET`    | `/api/products/:product_id/variants/:variant_id/relations/:id`      | show a relation  |
+| `POST`   | `/api/products/:product_id/variants/:variant_id/relations`          | create           |
+| `PATCH`  | `/api/products/:product_id/variants/:variant_id/relations/:id`      | update           |
+| `DELETE` | `/api/products/:product_id/variants/:variant_id/relations/:id`      | destroy          |
+| `POST`   | `/api/products/:product_id/variants/:variant_id/relations/update_positions` | reorder  |
+
+`index` responses are paginated (`page` / `per_page`) and wrap the collection in a `relations`
+key alongside pagination metadata. `create` and `update` render the same representation as
+`show`. Example:
+
+```bash
+# List a product's relations
+curl -H "Authorization: Bearer $SPREE_API_KEY" \
+  https://your-store.example/api/products/1/relations
+
+# Create a relation
+curl -X POST -H "Authorization: Bearer $SPREE_API_KEY" \
+  -d 'relation[related_to_id]=2&relation[relation_type_id]=1' \
+  https://your-store.example/api/products/1/relations
+```
+
+A single relation is represented as:
+
+```json
+{
+  "id": 1,
+  "relation_type_id": 1,
+  "relatable_id": 1,
+  "relatable_type": "Spree::Product",
+  "related_to_id": 2,
+  "related_to_type": "Spree::Product",
+  "discount_amount": "0.0",
+  "description": null,
+  "position": 0,
+  "created_at": "2026-07-06T00:00:00.000Z",
+  "updated_at": "2026-07-06T00:00:00.000Z"
+}
+```
+
 ## Development
 
 ### Testing the extension
