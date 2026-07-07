@@ -6,7 +6,7 @@ module Spree
       class RelationsController < Spree::Api::BaseController
         include Spree::RelatedToFinder
 
-        before_action :load_data, only: [:index, :create, :destroy]
+        before_action :load_data, only: [:index, :show, :create, :update, :destroy]
         before_action :find_relation, only: [:show, :update, :destroy]
 
         def index
@@ -74,8 +74,12 @@ module Spree
           @variant = Spree::Variant.find(params[:variant_id])
         end
 
+        # Scope the finder through the parent variant so a relation under a
+        # different variant 404s instead of leaking across context. The :show
+        # ability level filters records the user can't read; write actions
+        # layer their own authorize! on top.
         def find_relation
-          @relation = Relation.find(params[:id])
+          @relation = @variant.relations.accessible_by(current_ability, :show).find(params[:id])
         end
 
         def model_class

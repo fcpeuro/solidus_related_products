@@ -57,6 +57,12 @@ RSpec.describe Spree::Api::RelationsController, type: :controller do
         expect(json_response['id']).to eq(relation.id)
         expect(json_response['related_to_id']).to eq(other1.id)
       end
+
+      it 'returns 404 for a relation belonging to a different product' do
+        other_product = create(:product)
+        get :show, params: { product_id: other_product.id, id: relation.id, format: :json }
+        expect(response.status).to eq(404)
+      end
     end
 
     describe '#create' do

@@ -59,6 +59,12 @@ RSpec.describe Spree::Api::Variants::RelationsController, type: :controller do
         expect(json_response['id']).to eq(relation.id)
         expect(json_response['related_to_id']).to eq(other1.id)
       end
+
+      it 'returns 404 for a relation belonging to a different variant' do
+        other_variant = create(:variant)
+        get :show, params: { product_id: other_variant.product.id, variant_id: other_variant.id, id: relation.id, format: :json }
+        expect(response.status).to eq(404)
+      end
     end
 
     describe '#create' do
