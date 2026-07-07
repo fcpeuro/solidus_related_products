@@ -6,8 +6,19 @@ module Spree
       class RelationsController < Spree::Api::BaseController
         include Spree::RelatedToFinder
 
-        before_action :load_data, only: [:create, :destroy]
-        before_action :find_relation, only: [:update, :destroy]
+        before_action :load_data, only: [:index, :create, :destroy]
+        before_action :find_relation, only: [:show, :update, :destroy]
+
+        def index
+          authorize! :index, Relation
+          @relations = paginate(@variant.relations.accessible_by(current_ability))
+          respond_with(@relations)
+        end
+
+        def show
+          authorize! :show, @relation
+          respond_with(@relation)
+        end
 
         def create
           authorize! :create, Relation
@@ -16,7 +27,7 @@ module Spree
           @relation.related_to = find_related_to
 
           if @relation.save
-            render json: @relation.to_json, status: :created
+            respond_with(@relation, status: 201, default_template: :show)
           else
             invalid_resource!(@relation)
           end
@@ -25,7 +36,7 @@ module Spree
         def update
           authorize! :update, Relation
           if @relation.update(relation_params)
-            render json: @relation.to_json
+            respond_with(@relation, status: 200, default_template: :show)
           else
             invalid_resource!(@relation)
           end

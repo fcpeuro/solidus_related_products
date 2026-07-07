@@ -44,6 +44,23 @@ RSpec.describe Spree::Api::Variants::RelationsController, type: :controller do
       }
     end
 
+    describe '#index' do
+      it 'lists the relations for the variant' do
+        get :index, params: { product_id: product.id, variant_id: variant.id, format: :json }
+        expect(response.status).to eq(200)
+        expect(json_response['relations'].map { |r| r['id'] }).to eq([relation.id])
+      end
+    end
+
+    describe '#show' do
+      it 'returns the relation' do
+        get :show, params: { product_id: product.id, variant_id: variant.id, id: relation.id, format: :json }
+        expect(response.status).to eq(200)
+        expect(json_response['id']).to eq(relation.id)
+        expect(json_response['related_to_id']).to eq(other1.id)
+      end
+    end
+
     describe '#create' do
       it 'creates the relation' do
         post :create, params: valid_params
